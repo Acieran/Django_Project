@@ -1,0 +1,36 @@
+@startuml
+actor Registered_User
+actor User
+actor Admin
+
+rectangle OnlineFlowersShop {
+  usecase Check_All_Flowers
+  usecase Select_Flower
+  usecase Add_To_Cart
+  usecase Check_Cart
+  usecase Register
+  usecase Place_Order
+  usecase Check_Order_Status
+  usecase Flower_Administration
+  usecase Order_Administration
+  usecase User_Administration
+}
+
+User --|> Check_All_Flowers
+User --|> Select_Flower
+User --|> Add_To_Cart
+User --|> Check_Cart
+User --|> Register
+
+Registered_User --|> Check_All_Flowers
+Registered_User --|> Select_Flower
+Registered_User --|> Add_To_Cart
+Registered_User --|> Check_Cart
+Registered_User --|> Place_Order
+Registered_User --|> Check_Order_Status
+
+Admin --|> Flower_Administration
+Admin --|> Order_Administration
+Admin --|> User_Administration
+
+@enduml
