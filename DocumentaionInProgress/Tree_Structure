@@ -1,0 +1,51 @@
+myflowershop/
+├── myflowershop/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+├── flowers/
+│   ├── __init__.py
+│   ├── models.py
+│   ├── views.py
+│   ├── templates/
+│   │   └── flowers/
+│   │       ├── flower_list.html
+│   │       ├── flower_detail.html
+│   │       ├── flower_create.html
+│   │       ├── flower_update.html
+│   │       └── flower_delete.html
+│   └── urls.py
+├── orders/
+│   ├── __init__.py
+│   ├── models.py
+│   ├── views.py
+│   ├── templates/
+│   │   └── orders/
+│   │       ├── cart.html
+│   │       ├── order_list.html
+│   │       ├── order_update.html
+│   │       ├── order_delete.html
+│   │       └── checkout.html
+│   └── urls.py
+├── account/
+│   ├── __init__.py
+│   ├── models.py
+│   ├── views.py
+│   ├── templates/
+│   │   └── account/
+│   │       ├── register.html
+│   │       ├── login.html
+│   │       ├── profile.html
+│   │       ├── order_history.html
+│   │       ├── order_detail.html
+│   │       ├── account_list.html
+│   │       ├── account_update.html
+│   │       └── account_delete.html
+│   └── urls.py
+└── manage.py
+; ├── about/  # Django app for "About Us" page (optional)
+; │   ├── ... (similar structure as shop and account apps)
+; ├── contact/ # Django app for "Contact Us" page (optional)
+; │   ├── ... (similar structure as shop and account apps)
