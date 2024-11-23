@@ -8,7 +8,7 @@ myflowershop/
 ├── flowers/
 │   ├── __init__.py
 │   ├── models.py
-│   ├── views.py
+│   ├── views.py(get_flowers,get_flower,CDU flower,add_flower_to_Cart)
 │   ├── templates/
 │   │   └── flowers/
 │   │       ├── flower_list.html
@@ -20,26 +20,26 @@ myflowershop/
 ├── orders/
 │   ├── __init__.py
 │   ├── models.py
-│   ├── views.py
+│   ├── views.py (get_orders,get_order,CDU order,place_order)
 │   ├── templates/
 │   │   └── orders/
 │   │       ├── cart.html
 │   │       ├── order_list.html
 │   │       ├── order_update.html
 │   │       ├── order_delete.html
+│   │       ├── order_detail.html
 │   │       └── checkout.html
 │   └── urls.py
 ├── account/
 │   ├── __init__.py
 │   ├── models.py
-│   ├── views.py
+│   ├── views.py(register_User,find_User,get_profile,get_order_history,get_Users,CDU User)
 │   ├── templates/
 │   │   └── account/
 │   │       ├── register.html
 │   │       ├── login.html
 │   │       ├── profile.html
 │   │       ├── order_history.html
-│   │       ├── order_detail.html
 │   │       ├── account_list.html
 │   │       ├── account_update.html
 │   │       └── account_delete.html
