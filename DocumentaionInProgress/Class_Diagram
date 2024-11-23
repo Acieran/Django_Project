@@ -8,10 +8,10 @@ class Flower {
     
     + get_flowers() : List<Flower>
     + get_flower(id: int) : Flower
-    + get_flowers_with_filters(List<Args>) : List<Flower>
     + add_flower(name : String, price : Double, description : String, image : Image) : void
     + delete_flower(id: int) : void
     + edit_flower(id: int, name : String, price : Double, description : String, image : Image) : void
+    + add_flower_to_Cart(id: int,Order int): void
 }
 
 class User {
@@ -23,8 +23,12 @@ class User {
     - Balance : Double
     
     + create_user(name: String, phone: String, address: String) : User
+    + find_user(id: int): User
     + get_user(id: int) : User
-    + update_balance(deductAmount: Double) : void
+    + get_Order_history(User: user) : List<Order>
+    + update_user(User: user) : void
+    + delete_user(User: user) : void
+    + get_users() : List<User>
 }
 
 class Order {
@@ -35,13 +39,12 @@ class Order {
     - order_status : OrderStatus
     - payment_status : PaymentStatus
     
-    + set_order_status(order_status: OrderStatus) : void
-    + set_payment_status(payment_staus : PaymentStatus) : void
+    + place_order(Order: order, User: user) : void
     + create_order(user: User, items: List<OrderItem>) : Order
     + get_orders(user: User) : List<Order>
+    + get_order(Order: order) : Order
     + update_order(order: Order) : void
     + delete_order(Id : Id): void
-    + try_to_pay(user: User, price: Double) : void
 }
 
 
