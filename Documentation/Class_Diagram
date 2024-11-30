@@ -1,0 +1,66 @@
+@startuml
+class Flower {
+    - id : Id
+    - name : String
+    - price : Double
+    - description : String
+    - image : Image
+    
+    + get_flowers() : List<Flower>
+    + get_flower(id: int) : Flower
+    + add_flower(name : String, price : Double, description : String, image : Image) : void
+    + delete_flower(id: int) : void
+    + edit_flower(id: int, name : String, price : Double, description : String, image : Image) : void
+    + add_flower_to_Cart(id: int,Order int): void
+}
+
+class User {
+    - Id : Id
+    - name : String
+    - phone : String
+    - address : String
+    - AdditionalInfo: String
+    - Balance : Double
+    
+    + create_user(name: String, phone: String, address: String) : User
+    + find_user(id: int): User
+    + get_user(id: int) : User
+    + get_Order_history(User: user) : List<Order>
+    + update_user(User: user) : void
+    + delete_user(User: user) : void
+    + get_users() : List<User>
+}
+
+class Order {
+    - Id : Id
+    - user : User
+    - items : Map<Flower, Double>
+    - total_price : Double
+    - order_status : OrderStatus
+    - payment_status : PaymentStatus
+    
+    + place_order(Order: order, User: user) : void
+    + create_order(user: User, items: List<OrderItem>) : Order
+    + get_orders(user: User) : List<Order>
+    + get_order(Order: order) : Order
+    + update_order(order: Order) : void
+    + delete_order(Id : Id): void
+}
+
+
+enum OrderStatus {
+    PENDING,
+    CONFIRMED,
+    DELIVERED
+}
+
+enum PaymentStatus{
+    PAID,
+    NOTFULLYPAYED,
+    NOTPAYED
+}
+
+Order *-- User
+Order *-- Flower
+
+@enduml

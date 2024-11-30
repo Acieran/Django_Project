@@ -1,0 +1,27 @@
+templates/
+└── base.html
+    ├── flowers/
+    │   ├── flower_list.html
+    │   ├── flower_create.html
+    │   ├── flower_update.html
+    │   ├── flower_delete.html
+    │   └── flower_detail.html
+    ├── orders/
+    │   ├── cart.html
+    │   ├── order_update.html
+    │   ├── order_delete.html
+    │   ├── checkout.html
+    │   └── order_detail.html
+    ├── account/
+    │   ├── register.html
+    │   ├── login.html
+    │   ├── profile.html
+    │   │   └── order_history.html
+    │   ├── account_list.html
+    │   ├── account_update.html
+    │   └── account_delete.html
+    ; ├── about/
+    ; │   └── about_us.html
+    ; ├── contact/
+    ; │   └── contact_us.html
+    └── 404.html  # 404 error page

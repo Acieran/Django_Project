@@ -1,0 +1,107 @@
+@startuml
+participant Frontend
+participant Order
+participant User
+participant Flower
+participant Database
+
+activate Frontend
+Frontend -> Flower: Get flower(s)
+activate Flower
+Flower -> Database: Get flower(s)
+activate Database
+Database --> Flower: Flower(s) data
+deactivate Database
+Flower --> Frontend: Flower(s) data
+deactivate Flower
+
+Frontend -> Order: Add item to cart(Flower, quantity)
+activate Order
+Order -> Database: Create new order
+activate Database
+Database --> Order: Order Created
+deactivate Database
+Order --> Frontend: Cart updated
+deactivate Order
+
+Frontend -> Order: Open cart
+activate Order
+Order -> Database: Get Order Data
+activate Database
+Database --> Order: Order data
+deactivate Database
+Order --> Frontend: Cart data
+deactivate Order
+
+Frontend -> Order: Place order(User not existst)
+activate Order
+Order -> User: Check if user registered
+deactivate Order
+activate User
+User --> Database: If user not exists
+activate Database
+Database --> User: Need to register
+deactivate Database
+User -> Frontend: Registration Form
+deactivate User
+deactivate Order
+
+
+Frontend -> Order: Place order(User exists)
+activate Order
+Order -> User: Check if user registered
+activate User
+User --> Database: User exists
+activate Database
+Database --> User: User exists
+deactivate Database
+User --> Order: User exists
+deactivate User
+Order --> Database: Place Order
+activate Database
+Database --> Order: Order Created
+deactivate Database
+Order --> Frontend: Order Created
+deactivate Order
+
+Frontend -> Order: Check order status
+activate Order
+Order -> Database: Get order data
+activate Database
+Database --> Order: order data
+deactivate Database
+Order --> Frontend: order data
+deactivate Order
+
+Frontend -> User: Update Balance
+activate User
+User -> Database: Update Balance
+activate Database
+Database --> User: Balance Updated
+deactivate Database
+User --> Frontend: Balance Updated
+deactivate User
+
+Frontend -> Flower: Add Flower
+activate Flower
+Flower -> Database: Send Flower to BD
+deactivate Flower
+
+Frontend -> Flower: Delete Flower
+activate Flower
+Flower -> Database: Delete Flower from BD
+deactivate Flower
+
+Frontend -> Flower: Edit Flower
+activate Flower
+Flower -> Database: Edit Flower in BD
+deactivate Flower
+
+Frontend -> Order: Delete Order
+activate Order
+Order -> Database: Delete Order in BD
+deactivate Order
+
+deactivate Frontend
+
+@enduml
