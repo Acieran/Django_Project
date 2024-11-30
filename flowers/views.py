@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Flower
 from orders.models import FlowerCart
@@ -32,9 +30,9 @@ class FlowerDeleteView(LoginRequiredMixin,DeleteView):
     template_name = 'flowers/flower_delete.html'
     success_url = '/flowers/'
 
-def add_to_cart(request,pk):
+def add_to_cart(request,flower_id):
     if request.method == 'POST':
-        flower = get_object_or_404(Flower,pk=pk)
+        flower = get_object_or_404(Flower,flower_id=flower_id)
         quantity = request.POST.get('quantity')
         cart_item, created = FlowerCart.objects.get_or_create(user=request.user,flower=flower)
         if created:

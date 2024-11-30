@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="flower-detail">
+        <h1>{{ flower.name }}</h1>
+        <img src="{{ flower.image.url }}" alt="{{ flower.name }}" class="flower-image">
+
+        <div class="flower-info">
+            <p class="price">${{ flower.price }}</p>
+            <p class="stock">Stock: {% if flower.stock > 0 %}{{ flower.stock }} in stock{% else %}Out of stock{% endif %}</p>
+            <p class="description">{{ flower.description }}</p>
+
+            {% if flower.stock > 0 %}
+                <form method="post" action="{% url 'flowers:add_to_cart' flower.id %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}  <!-- Or use a more customized form rendering -->
+                    <button type="submit" class="add-to-cart">Add to Cart</button>
+                </form>
+            {% else %}
+                <p class="out-of-stock">This flower is currently out of stock.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

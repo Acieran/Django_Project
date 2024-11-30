@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>Delete Flower: {{ flower.name }}</h1>
+        <div class="alert alert-warning">
+            <p>Are you sure you want to delete "{{ flower.name }}"?</p>
+            <img src="{{ flower.image.url }}" alt="{{ flower.name }}" class="img-fluid mb-3">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete Flower</button>
+                <a href="{% url 'flowers:flower_list' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Flower List</h1>
+    <ul>
+        {% for flower in flowers %}
+            <li>
+                <a href="{% url 'flowers:flower_detail' flower.id %}">{{ flower.name }}</a> - ${{ flower.price }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
