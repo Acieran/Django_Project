@@ -1,9 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy
+
 from .models import Flower
 from orders.models import FlowerCart
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+
+
+class MyLoginRequiredMixin(LoginRequiredMixin):
+    login_url = reverse_lazy('account:login')  # Example: Login view
 
 class FlowerListView(ListView):
     model = Flower
@@ -14,18 +20,18 @@ class FlowerDetailView(DetailView):
     model = Flower
     template_name = 'flowers/flower_detail.html'
 
-class FlowerCreateView(LoginRequiredMixin,CreateView):
+class FlowerCreateView(MyLoginRequiredMixin,CreateView):
     model = Flower
     fields = ['name', 'description', 'price', 'image']
     template_name = 'flowers/flower_create.html'
 
-class FlowerUpdateView(LoginRequiredMixin,UpdateView):
+class FlowerUpdateView(MyLoginRequiredMixin,UpdateView):
     model = Flower
     fields = ['name', 'description', 'price', 'image']
     template_name = 'flowers/flower_update.html'
 
 
-class FlowerDeleteView(LoginRequiredMixin,DeleteView):
+class FlowerDeleteView(MyLoginRequiredMixin,DeleteView):
     model = Flower
     template_name = 'flowers/flower_delete.html'
     success_url = '/flowers/'
