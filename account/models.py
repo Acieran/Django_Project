@@ -9,11 +9,11 @@ class User(AbstractUser):
 
     groups = models.ManyToManyField(
         'auth.Group',
-        related_name='custom_user_set',  # This is crucial!
+        related_name='custom_user_group',  # This is crucial!
         blank=True,
     )
     user_permissions = models.ManyToManyField(
         'auth.Permission',
-        related_name='custom_user_set',  # This is crucial!
+        related_name='custom_user_permission',  # This is crucial!
         blank=True,
     )

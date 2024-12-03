@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import User
-from .forms import UserForm, UserUpdateForm, AuthenticationForm  # Create these forms
+from .forms import UserForm, UserUpdateForm, AuthenticationForm, LoginForm  # Create these forms
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from orders.models import Order #Import Order model
@@ -19,7 +19,7 @@ def register_user(request):
 
 def login_user(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = LoginForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -30,7 +30,7 @@ def login_user(request):
             else:
                 return render(request, 'account/login.html', {'form': form, 'error_message': 'Invalid credentials'})
     else:
-        form = AuthenticationForm()
+        form = LoginForm()
     return render(request, 'account/login.html', {'form': form})
 
 @login_required(login_url='account:login')
