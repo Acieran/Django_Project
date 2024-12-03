@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>Order Details</h1>
+        <table class="table">
+            <tr>
+                <th>Order ID</th>
+                <td>{{ order.id }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ order.created_at }}</td>
+            </tr>
+            <tr>
+                <th>Updated</th>
+                <td>{{ order.updated_at }}</td>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <td>${{ order.total_price }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ order.order_status }}</td>
+            </tr>
+            <tr>
+                <th>Shipping Address</th>
+                <td>{{ order.shipping_address }}</td>
+            </tr>
+        </table>
+
+        <h2>Items:</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Flower</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.orderitem_set.all %}
+                    <tr>
+                        <td>{{ item.flower.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.flower.price * item.quantity }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
