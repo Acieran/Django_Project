@@ -33,16 +33,16 @@ def login_user(request):
         form = AuthenticationForm()
     return render(request, 'account/login.html', {'form': form})
 
-@login_required
+@login_required(login_url='account:login')
 def logout_user(request):
     logout(request)
     return redirect('account:login')
 
-@login_required
+@login_required(login_url='account:login')
 def get_profile(request):
     return render(request, 'account/profile.html', {'user': request.user})
 
-@login_required
+@login_required(login_url='account:login')
 def update_profile(request):
     if request.method == 'POST':
         form = UserUpdateForm(request.POST, instance=request.user)
@@ -54,7 +54,7 @@ def update_profile(request):
     return render(request, 'account/profile_update.html', {'form': form})
 
 
-@login_required
+@login_required(login_url='account:login')
 def get_order_history(request):
     orders = Order.objects.filter(user=request.user)
     return render(request, 'account/order_history.html', {'orders': orders})
