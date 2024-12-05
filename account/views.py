@@ -11,6 +11,8 @@ def register_user(request):
         form = UserForm(request.POST)
         if form.is_valid():
             user = form.save()
+            user.set_password(request.POST['password'])
+            user.save()
             login(request, user)  # Log in the user after successful registration
             return redirect('account:profile')
     else:
@@ -19,7 +21,7 @@ def register_user(request):
 
 def login_user(request):
     if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
+        form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -30,7 +32,7 @@ def login_user(request):
             else:
                 return render(request, 'account/login.html', {'form': form, 'error_message': 'Invalid credentials'})
     else:
-        form = LoginForm()
+        form = AuthenticationForm()
     return render(request, 'account/login.html', {'form': form})
 
 @login_required(login_url='account:login')
@@ -62,28 +64,29 @@ def get_order_history(request):
 # Admin-like views (These should be protected with appropriate permissions/authentication):
 
 def get_users(request):
-    if not request.user.is_superuser: #Check if superuser
+    if not (request.user.is_superuser or request.user.is_staff): #Check if superuser
         return redirect('account:profile') #Redirect to profile if not superuser
     users = User.objects.all()
     return render(request, 'account/account_list.html', {'users': users})
 
 def update_user(request, user_id):
-    if not request.user.is_superuser:
+    if not (request.user.is_superuser or request.user.is_staff):
         return redirect('account:profile')
-    user = get_object_or_404(User, pk=user_id)
+    user_to_change = get_object_or_404(User, pk=user_id)
+    user = request.user
     if request.method == 'POST':
-        form = UserUpdateForm(request.POST, instance=user)
+        form = UserUpdateForm(request.POST, instance=user_to_change)
         if form.is_valid():
             form.save()
             return redirect('account:get_users')
     else:
-        form = UserUpdateForm(instance=user)
-    return render(request, 'account/account_update.html', {'form': form, 'user': user})
+        form = UserUpdateForm(instance=user_to_change)
+    return render(request, 'account/account_update.html', {'form': form, 'user': user, 'user_to_change': user_to_change})
 
 
 @login_required(login_url='account:login')
 def delete_user(request, user_id):
-    if not request.user.is_superuser:  # Crucial security check!
+    if not (request.user.is_superuser or request.user.is_staff):  # Crucial security check!
         return redirect('account:profile')
 
     user = get_object_or_404(User, pk=user_id)

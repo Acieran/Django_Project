@@ -23,7 +23,7 @@ class UserForm(forms.ModelForm):
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email')
+        fields = ('first_name', 'last_name', 'email', 'is_staff')
 
 
 class LoginForm(AuthenticationForm):  # Using Django's built-in form for login

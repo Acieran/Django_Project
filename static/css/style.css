@@ -1,0 +1,9 @@
+.dropdown-menu-left {
+    left: auto !important;
+    right: 0; /* Adjust as needed */
+    text-align: left;
+}
+
+.dropdown-menu {
+
+}
