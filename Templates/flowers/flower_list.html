@@ -38,19 +38,24 @@
                                         {% endif %}
                                     </a>
                                 </td>
-                                <td>{{ flower.name }}</td>
+                                <td>
+                                    <a href="{% url 'flowers:flower-detail' flower.id %}">
+                                        {{ flower.name }}
+                                    </a>
+                                </td>
                                 <td>{{ flower.price }} RUB</td>
                                 <td>
                                     <div class="quantity-control" style="display: flex; align-items: center; gap: 5px;">
                                         <button class="btn btn-sm btn-secondary decrement-btn">-</button>
                                         <label>
                                             <input type="number" class="form-control quantity-input" value="0" min="0" data-flower-id="{{ flower.id }}"
-                                                   style="width: auto; min-width: 2em; max-width: 4em; text-align: center">
+                                                   style="width: auto; min-width: 2em; max-width: 4em; text-align: center" id="quantityInput" data-stock={{ flower.stock }}>
                                         </label>
                                         <button class="btn btn-sm btn-secondary increment-btn">+</button>
                                     </div>
                                 </td>
                                 <td>
+{#                                    TODO Check if add-to-cart is properly working#}
                                     <button class="btn btn-success add-to-cart-btn" data-flower-id="{{ flower.id }}">
                                         <i class="fas fa-shopping-cart"></i> Add to Cart
                                     </button>
@@ -113,20 +118,20 @@
         //JavaScript for quantity control
         const incrementButtons = document.querySelectorAll('.increment-btn');
         const decrementButtons = document.querySelectorAll('.decrement-btn');
-        const quantityInputs = document.querySelectorAll('.quantity-input');
+        const quantityInput = document.getElementById("quantityInput");
 
 
         incrementButtons.forEach(button => {
             button.addEventListener('click', () => {
-                const quantityInput = button.previousElementSibling;
-                quantityInput.value = parseInt(quantityInput.value) + 1;
+                const node = button.previousElementSibling.childNodes[1];
+                node.value = Math.min(parseInt(node.dataset.stock),parseInt(node.value) + 1);
             });
         });
 
         decrementButtons.forEach(button => {
             button.addEventListener('click', () => {
-                const quantityInput = button.nextElementSibling;
-                quantityInput.value = Math.max(0, parseInt(quantityInput.value) - 1);
+                const node = button.nextElementSibling.childNodes[1];
+                node.value = Math.max(0, parseInt(node.value) - 1);
             });
         });
 

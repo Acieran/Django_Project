@@ -34,9 +34,16 @@
                     <img src="{{ flower.image.url }}" alt="{{ flower.name }}" class="img-preview">
                 {% endif %}
             </div>
+        
+            <div class="mb-3">
+                <label for="{{ form.stock.id_for_label }}" class="form-label">Stock</label>
+                {{ form.stock }}
+                <div class="error-message">{% for error in form.stock.errors %}{{ error }}{% endfor %}</div>
+            </div>
 
 
             <button type="submit" class="btn btn-primary">Update Flower</button>
+            <a href="{% url 'flowers:flower-list' %}" class="btn btn-secondary" role="button">Cancel</a>
         </form>
     </div>
 {% endblock %}

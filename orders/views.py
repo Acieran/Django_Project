@@ -5,7 +5,7 @@ from .models import Order
 from flowers.models import Flower # Import the Flower model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages #For messages
-
+# TODO Make all htmls and check logic
 
 @login_required
 def get_orders(request):

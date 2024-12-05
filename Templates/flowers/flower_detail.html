@@ -10,19 +10,77 @@
         {% endif %}
 
         <div class="flower-info">
-            <p class="price">${{ flower.price }}</p>
+            <p class="price">{{ flower.price }} RUB</p>
             <p class="stock">Stock: {% if flower.stock > 0 %}{{ flower.stock }} in stock{% else %}Out of stock{% endif %}</p>
             <p class="description">{{ flower.description }}</p>
+            <div class="quantity-control" style="display: flex; align-items: center; gap: 5px;">
+                <button class="btn btn-sm btn-secondary decrement-btn">-</button>
+                <label>
+                    <input type="number" class="form-control quantity-input" value="0" min="0" data-flower-id="{{ flower.id }}"
+                           style="width: auto; min-width: 2em; max-width: 4em; text-align: center" id="quantityInput">
+                </label>
+                <button class="btn btn-sm btn-secondary increment-btn">+</button>
+            </div>
 
-            {% if flower.stock > 0 %}
-                <form method="post" action="{% url 'flowers:add_to_cart' flower.id %}">
-                    {% csrf_token %}
-                    {{ form.as_p }}  <!-- Or use a more customized form rendering -->
-                    <button type="submit" class="add-to-cart">Add to Cart</button>
-                </form>
-            {% else %}
-                <p class="out-of-stock">This flower is currently out of stock.</p>
-            {% endif %}
+            <div class="button-group" style="display: flex; justify-content: space-between;">
+                {% if flower.stock > 0 %}
+    {#                <form method="post" action="{% url 'flowers:add-to-cart' flower.id %}">#}
+    {#                    {% csrf_token %}#}
+    {#                    {{ form.as_p }}  <!-- Or use a more customized form rendering -->#}
+    {#                    <button type="submit" class="add-to-cart">Add to Cart</button>#}
+    {#                </form>#}
+                    <button class="btn btn-success add-to-cart-btn" data-flower-id="{{ flower.id }}">
+                        <i class="fas fa-shopping-cart"></i> Добавить в корзину
+                    </button>
+                {% else %}
+                    <p class="out-of-stock">К сожалению, сейчас данного товара нет в наличии.</p>
+                {% endif %}
+                <a href="{% url 'flowers:flower-list' %}" class="btn btn-secondary mt-3">Назад</a>
+            </div>
         </div>
+
+        
     </div>
+
+    <script>
+        // JavaScript for Add to Cart (replace with your actual cart logic)
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const flowerId = button.dataset.flowerId;
+                const quantityInput = document.querySelector(`input[data-flower-id="${flowerId}"]`);
+                const quantity = parseInt(quantityInput.value);
+                if (quantity > 0) {
+                    //Your add to cart logic here, passing flowerId and quantity
+                    alert(`Adding ${quantity} of flower ID ${flowerId} to cart`);
+                    quantityInput.value = 0; //Reset Quantity input
+                } else {
+                    alert("Please select quantity greater than zero");
+                }
+            });
+        });
+    </script>
+
+
+    <script>
+        //JavaScript for quantity control
+        const incrementButtons = document.querySelectorAll('.increment-btn');
+        const decrementButtons = document.querySelectorAll('.decrement-btn');
+        const quantityInput = document.getElementById("quantityInput");
+
+
+        incrementButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const stock = {{ flower.stock }};
+                quantityInput.value = Math.min(stock,parseInt(quantityInput.value) + 1);
+            });
+        });
+
+        decrementButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                quantityInput.value = Math.max(0, parseInt(quantityInput.value) - 1);
+            });
+        });
+
+    </script>
 {% endblock %}

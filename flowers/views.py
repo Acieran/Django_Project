@@ -23,13 +23,13 @@ class FlowerDetailView(DetailView):
 
 class FlowerCreateView(MyLoginRequiredMixin,CreateView):
     model = Flower
-    fields = ['name', 'description', 'price', 'image']
+    fields = ['name', 'description', 'price', 'image', 'stock']
     template_name = 'flowers/flower_create.html'
     success_url = reverse_lazy('flowers:flower-list')
 
 class FlowerUpdateView(MyLoginRequiredMixin,UpdateView):
     model = Flower
-    fields = ['name', 'description', 'price', 'image']
+    fields = ['name', 'description', 'price', 'image', 'stock']
     template_name = 'flowers/flower_update.html'
     success_url = reverse_lazy('flowers:flower-list')
 
