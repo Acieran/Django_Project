@@ -15,6 +15,7 @@ class FlowerListView(ListView):
     model = Flower
     template_name = 'flowers/flower_list.html'
     context_object_name = 'flowers'
+    context = {'use_specific_css': True}
 
 class FlowerDetailView(DetailView):
     model = Flower
@@ -24,17 +25,19 @@ class FlowerCreateView(MyLoginRequiredMixin,CreateView):
     model = Flower
     fields = ['name', 'description', 'price', 'image']
     template_name = 'flowers/flower_create.html'
+    success_url = reverse_lazy('flowers:flower-list')
 
 class FlowerUpdateView(MyLoginRequiredMixin,UpdateView):
     model = Flower
     fields = ['name', 'description', 'price', 'image']
     template_name = 'flowers/flower_update.html'
+    success_url = reverse_lazy('flowers:flower-list')
 
 
 class FlowerDeleteView(MyLoginRequiredMixin,DeleteView):
     model = Flower
     template_name = 'flowers/flower_delete.html'
-    success_url = '/flowers/'
+    success_url = reverse_lazy('flowers:flower-list')
 
 def add_to_cart(request,flower_id):
     if request.method == 'POST':

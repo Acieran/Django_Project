@@ -3,7 +3,11 @@
 {% block content %}
     <div class="flower-detail">
         <h1>{{ flower.name }}</h1>
-        <img src="{{ flower.image.url }}" alt="{{ flower.name }}" class="flower-image">
+        {% if flower.image %}
+            <img src="{{ flower.image.url }}" alt="{{ flower.name }}" width="50">
+        {% else %}
+            <p>No image</p>
+        {% endif %}
 
         <div class="flower-info">
             <p class="price">${{ flower.price }}</p>

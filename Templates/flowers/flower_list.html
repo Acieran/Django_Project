@@ -1,12 +1,134 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Flower List</h1>
-    <ul>
-        {% for flower in flowers %}
-            <li>
-                <a href="{% url 'flowers:flower_detail' flower.id %}">{{ flower.name }}</a> - ${{ flower.price }}
-            </li>
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Flower List</h1>
+
+                {% if user.is_superuser or user.is_staff %}
+                    <div class="col-auto" style="left: 80%; padding-bottom: 10px">  <!-- This will take only the necessary width -->
+                        <a href="{% url 'flowers:flower-create' %}" class="btn btn-primary mt-3">Create New Flower</a>
+                    </div>
+                {% endif %}
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Фото</th>
+                            <th>Наименование</th>
+                            <th>Цена</th>
+                            <th>Количество</th>
+                            <th>Купить</th>
+                            <th>Доступное кол.</th>
+                            {% if user.is_superuser or user.is_staff %}
+                                <th>Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for flower in flowers %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'flowers:flower-detail' flower.id %}">
+                                        {% if flower.image %}
+                                            <img src="{{ flower.image.url }}" alt="{{ flower.name }}" width="50">
+                                        {% else %}
+                                            <p>No image</p>
+                                        {% endif %}
+                                    </a>
+                                </td>
+                                <td>{{ flower.name }}</td>
+                                <td>{{ flower.price }} RUB</td>
+                                <td>
+                                    <div class="quantity-control" style="display: flex; align-items: center; gap: 5px;">
+                                        <button class="btn btn-sm btn-secondary decrement-btn">-</button>
+                                        <label>
+                                            <input type="number" class="form-control quantity-input" value="0" min="0" data-flower-id="{{ flower.id }}"
+                                                   style="width: auto; min-width: 2em; max-width: 4em; text-align: center">
+                                        </label>
+                                        <button class="btn btn-sm btn-secondary increment-btn">+</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-success add-to-cart-btn" data-flower-id="{{ flower.id }}">
+                                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                                    </button>
+                                </td>
+                                <td>
+                                    <p>{{ flower.stock }}</p>
+                                </td>
+                                <td>
+                                    {% if user.is_superuser or user.is_staff %}
+                                        <a href="{% url 'flowers:flower-update' flower.id %}" class="btn btn-primary">Update</a>
+                                        <a href="{% url 'flowers:flower-delete' flower.id %}" class="btn btn-danger">Delete</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if flowers.has_other_pages %}
+                    <ul class="pagination">
+                        {% if flowers.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page={{ flowers.previous_page_number }}">Previous</a></li>
+                        {% endif %}
+                        {% for page_number in flowers.paginator.page_range %}
+                            <li class="page-item {% if page_number == flowers.number %}active{% endif %}">
+                                <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if flowers.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ flowers.next_page_number }}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // JavaScript for Add to Cart (replace with your actual cart logic)
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const flowerId = button.dataset.flowerId;
+                const quantityInput = document.querySelector(`input[data-flower-id="${flowerId}"]`);
+                const quantity = parseInt(quantityInput.value);
+                if (quantity > 0) {
+                    //Your add to cart logic here, passing flowerId and quantity
+                    alert(`Adding ${quantity} of flower ID ${flowerId} to cart`);
+                    quantityInput.value = 0; //Reset Quantity input
+                } else {
+                    alert("Please select quantity greater than zero");
+                }
+            });
+        });
+    </script>
+
+
+    <script>
+        //JavaScript for quantity control
+        const incrementButtons = document.querySelectorAll('.increment-btn');
+        const decrementButtons = document.querySelectorAll('.decrement-btn');
+        const quantityInputs = document.querySelectorAll('.quantity-input');
+
+
+        incrementButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const quantityInput = button.previousElementSibling;
+                quantityInput.value = parseInt(quantityInput.value) + 1;
+            });
+        });
+
+        decrementButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const quantityInput = button.nextElementSibling;
+                quantityInput.value = Math.max(0, parseInt(quantityInput.value) - 1);
+            });
+        });
+
+    </script>
 {% endblock %}

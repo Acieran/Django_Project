@@ -1,0 +1,6 @@
+.quantity-input{
+  width: auto; /* Allows width to adjust based on content */
+  min-width: 2em; /* Set a minimum width */
+  max-width: 4em; /* Set a maximum width to prevent excessive stretching */
+  text-align: center; /* Center the text within the input */
+}
