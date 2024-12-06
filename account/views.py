@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+
+from orders.views import get_orders
 from .models import User
 from .forms import UserForm, UserUpdateForm, AuthenticationForm, LoginForm  # Create these forms
 from django.contrib.auth import login, authenticate, logout
@@ -58,8 +60,7 @@ def update_profile(request):
 
 @login_required(login_url='account:login')
 def get_order_history(request):
-    orders = Order.objects.filter(user=request.user)
-    return render(request, 'account/order_history.html', {'orders': orders})
+    return get_orders(request)
 
 # Admin-like views (These should be protected with appropriate permissions/authentication):
 

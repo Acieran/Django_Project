@@ -1,12 +1,13 @@
 import json
 
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Order, FlowerCart
+from .models import Order, FlowerCart, OrderItem
 from flowers.models import Flower # Import the Flower model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages #For messages
@@ -29,25 +30,49 @@ def get_orders(request):
 
     return render(request, 'orders/order_list.html', {'orders': orders, 'paginator': paginator})
 
+def get_order_items(request, order_id):
+    """
+    Retrieves OrderItems associated with a specific order ID.
+
+    Args:
+        request: Request object.
+        order_id: The ID of the order.
+
+    Returns:
+        A QuerySet of OrderItem objects, or None if no order exists.  Raises an exception if the user doesn't own the order.
+        Returns an empty QuerySet if no order items are found.
+    """
+
+    try:
+        order = get_object_or_404(Order, pk=order_id)
+        #Important check to make sure the user can view the order items
+        if order.user.id != request.user.id and not(request.user.is_staff or request.user.is_superuser):  # Example: Assuming you have a request.user
+            raise PermissionDenied("You do not have permission to view this order.")
+        order_items = order.orderitem_set.all()
+        return order_items
+    except Order.DoesNotExist:
+        return None # or raise an exception, depending on desired behavior
+    except PermissionDenied as e:
+        raise e #Re-raise the exception
 
 def get_order(request, order_id):
     order = get_object_or_404(Order, pk=order_id, user=request.user)
-    flower_сart = order.flowerCart
-    return render(request, 'orders/order_detail.html', {'order': order, 'flowerCart': flower_сart})
+    order_items = get_order_items(request, order_id)
+    return render(request, 'orders/order_detail.html', {'order': order, 'order_items': order_items})
 
 
 @login_required
 def create_order(request):
     if request.method == 'POST':
         try:
-            with transaction.atomic():  # Crucial for data integrity
+            with (transaction.atomic()):  # Crucial for data integrity
                 cart_items = request.session.get('cart', {})
                 if not cart_items:
                     messages.error(request, 'Your cart is empty.')
                     return redirect('flowers:flower_list')
 
                 total_price = 0
-                order_items = []
+                order = Order.objects.create(user=request.user, total_amount=total_price)
                 for flower_id, quantity in cart_items.items():
                     try:
                         flower = Flower.objects.get(pk=flower_id)
@@ -55,8 +80,8 @@ def create_order(request):
                             messages.error(request, f"Insufficient stock for {flower.name}.")
                             return redirect('flowers:flower_list')  # Or handle differently.
                         total_price += flower.price * quantity
-                        order_items.append(FlowerCart(flower=flower, quantity=quantity))
-
+                        order_item = OrderItem.objects.create(order_id=order.id, quantity=quantity, flower=flower)
+                        order_item.save()
                     except Flower.DoesNotExist:
                         messages.error(request, f"Flower with ID {flower_id} not found.")
                         return redirect('flowers:flower_list')
@@ -64,13 +89,9 @@ def create_order(request):
                         messages.error(request, f"Invalid quantity: {e}")
                         return redirect('flowers:flower_list')
 
-                order = Order.objects.create(user=request.user, total_amount=total_price, )  # Corrected field name
-
-                # Use bulk_create for efficiency
                 try:
-                    for item in order_items:
-                        item.user = request.user
-                        item.save()
+                    order.total_amount = total_price
+                    order.save()
                 except Exception as e:
                     import traceback
                     print(f"Exception during item.save(): {e}")
@@ -92,9 +113,9 @@ def create_order(request):
 def order_update(request, order_id):
     try:
         order = get_object_or_404(Order, pk=order_id)
-
+        order_items = get_order_items(request, order_id)
         if request.method == 'POST':
-            for item in order.flowerCart.all(): # Correct access to many-to-many
+            for item in order_items: # Correct access to many-to-many
                 new_quantity = request.POST.get(f'quantity_{item.id}')
                 try:
                     new_quantity = int(new_quantity)
@@ -108,7 +129,7 @@ def order_update(request, order_id):
                     return HttpResponseRedirect(request.path)
             messages.success(request, "Order updated successfully!")
             return redirect('orders:order_detail', order_id=order_id)
-        return render(request, 'orders/order_update.html', {'order': order})
+        return render(request, 'orders/order_update.html', {'order': order, 'order_items': order_items})
     except Order.DoesNotExist:
         messages.error(request, "Order not found.")
         return redirect('flowers:flower_list')

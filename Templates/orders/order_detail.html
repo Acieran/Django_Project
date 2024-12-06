@@ -20,7 +20,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for order_item in flower_сart.all %}
+                {% for order_item in order_items.all %}
                     <tr>
                         <td>{{ order_item.flower.name }}</td>
                         <td>{{ order_item.quantity }}</td>
