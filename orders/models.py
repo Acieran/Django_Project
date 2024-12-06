@@ -10,4 +10,4 @@ class Order(models.Model):
     order_date = models.DateTimeField(auto_now_add=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     #Add other fields: status (e.g., pending, shipped, delivered), address, etc.
-    flowercart = models.ForeignKey(FlowerCart, on_delete=models.CASCADE, null=True)
+    flowerCart = models.ForeignKey('orders.FlowerCart', on_delete=models.CASCADE, blank=True, null=True)

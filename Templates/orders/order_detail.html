@@ -1,53 +1,53 @@
 {% extends 'base.html' %}
+{% load my_filters %}
 
 {% block content %}
-    <div class="container">
-        <h1>Order Details</h1>
-        <table class="table">
-            <tr>
-                <th>Order ID</th>
-                <td>{{ order.id }}</td>
-            </tr>
-            <tr>
-                <th>Date</th>
-                <td>{{ order.created_at }}</td>
-            </tr>
-            <tr>
-                <th>Updated</th>
-                <td>{{ order.updated_at }}</td>
-            </tr>
-            <tr>
-                <th>Total</th>
-                <td>${{ order.total_price }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ order.order_status }}</td>
-            </tr>
-            <tr>
-                <th>Shipping Address</th>
-                <td>{{ order.shipping_address }}</td>
-            </tr>
-        </table>
+    <h1>Order Details</h1>
 
-        <h2>Items:</h2>
-        <table class="table">
+    {% if order %}
+        <p><strong>Order ID:</strong> {{ order.id }}</p>
+        <p><strong>Order Date:</strong> {{ order.order_date }}</p>
+        <p><strong>Total Amount:</strong> {{ order.total_amount }} RUB</p>
+
+        <h2>Order Items</h2>
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Flower</th>
                     <th>Quantity</th>
                     <th>Price</th>
+                    <th>Subtotal</th>
                 </tr>
             </thead>
             <tbody>
-                {% for item in order.orderitem_set.all %}
+                {% for order_item in flower_сart.all %}
                     <tr>
-                        <td>{{ item.flower.name }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>${{ item.flower.price * item.quantity }}</td>
+                        <td>{{ order_item.flower.name }}</td>
+                        <td>{{ order_item.quantity }}</td>
+                        <td>{{ order_item.flower.price }} RUB</td>
+                        <td>{{ order_item.flower.price|calculate_subtotal:order_item.quantity }} RUB</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-    </div>
+
+        <h2>Shipping Information</h2>
+        <p><strong>Address:</strong>  {% if order.shipping_address %}{{ order.shipping_address }}{% else %}Not provided{% endif %}</p>
+        <p><strong>City:</strong> {% if order.shipping_city %}{{ order.shipping_city }}{% else %}Not provided{% endif %}</p>
+        <p><strong>State/Province:</strong> {% if order.shipping_state %}{{ order.shipping_state }}{% else %}Not provided{% endif %}</p>
+        <p><strong>Zip Code:</strong> {% if order.shipping_zip_code %}{{ order.shipping_zip_code }}{% else %}Not provided{% endif %}</p>
+
+        {% if order.status %}
+            <p><strong>Status:</strong> {{ order.status }}</p>
+        {% endif %}
+
+
+        <a href="{% url 'orders:order_update' order.id %}" class="btn btn-primary">Update Order</a>
+        <a href="{% url 'orders:order_delete' order.id %}" class="btn btn-danger">Delete Order</a>
+        <a href="{% url 'orders:order_list' %}" class="btn btn-secondary">Back to Orders</a>
+
+    {% else %}
+        <p>Order not found.</p>
+    {% endif %}
+
 {% endblock %}

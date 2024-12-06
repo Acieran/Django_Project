@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Удалить заказ</h1>
+
+    {% if order %}
+        <p>Вы уверены, что вы хотите удалить заказ с номером:{{ order.id }} (размещенный {{ order.order_date }})? Это действие не может быть отменено.</p>
+
+        <form method="post" action="{% url 'orders:order_delete' order.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Удалить заказ</button>
+            <a href="{% url 'orders:order_list' %}" class="btn btn-secondary">Отмена</a>
+        </form>
+    {% else %}
+        <p>Заказ не найден</p>
+    {% endif %}
+
+{% endblock %}

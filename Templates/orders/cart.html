@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load my_filters %}
+
+{% block content %}
+    <h1>Shopping Cart</h1>
+
+    {% if cart %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Flower</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for flower_id, quantity in cart.items %}
+                    {% with flower=flowers|get_item:flower_id %}
+                        {% if flower %}
+                            <tr>
+                                <td>{{ flower.name }}</td>
+                                <td>{{ quantity }}</td>
+                                <td>{{ flower.price }} RUB</td>
+                                <td>{{ subtotals|get_item:flower_id }} RUB</td>
+                                <td>
+                                    <a href="{% url 'orders:remove_from_cart' flower_id %}" class="btn btn-danger btn-sm">Remove</a>
+                                </td>
+                            </tr>
+                        {% else %}
+                                Flower not found
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total">
+            <p>Total: {{ total_price }} RUB</p>  
+        </div>
+        <div>
+            <form method="post" action="{% url 'orders:create_order' %}">
+                {% csrf_token %}  <!-- Crucial for security -->
+                <button type="submit" class="btn btn-success">Place Order</button>
+            </form>
+            <button type="button" class="btn btn-secondary" onclick="history.back()">Назад</button>
+        <div>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+
+{% endblock %}

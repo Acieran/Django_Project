@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Обновление заказа</h1>
+
+    {% if order %}
+        <form method="post" action="{% url 'orders:order_update' order.id %}">
+            {% csrf_token %}
+            <div>
+                <p>Order Date: {{ order.order_date }}</p>
+                <p>Total Amount: {{ order.total_amount }} RUB</p>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Flower</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order_item in order.flowerCart.all %}  {# Correct field name #}
+                            <tr>
+                                <td>{{ order_item.flower.name }}</td>
+                                <td>
+                                    <input type="number" name="quantity_{{ order_item.id }}" class="form-control quantity-input" value="{{ order_item.quantity }}" min="0">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <button type="submit" class="btn btn-primary">Обновить заказ</button>
+                <button type="button" class="btn btn-secondary" onclick="history.back()">Назад</button>
+            </div>
+        </form>
+    {% else %}
+        <p>Order not found.</p>
+    {% endif %}
+
+{% endblock %}
