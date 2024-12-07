@@ -7,11 +7,11 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Order, FlowerCart, OrderItem
+from flowers.views import decrease_stock
+from .models import Order, OrderItem
 from flowers.models import Flower # Import the Flower model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages #For messages
-# TODO Make all htmls and check logic
 
 @login_required
 def get_orders(request):
@@ -60,7 +60,6 @@ def get_order(request, order_id):
     order_items = get_order_items(request, order_id)
     return render(request, 'orders/order_detail.html', {'order': order, 'order_items': order_items})
 
-
 @login_required
 def create_order(request):
     if request.method == 'POST':
@@ -82,6 +81,7 @@ def create_order(request):
                         total_price += flower.price * quantity
                         order_item = OrderItem.objects.create(order_id=order.id, quantity=quantity, flower=flower)
                         order_item.save()
+                        decrease_stock(request, flower_id, quantity)
                     except Flower.DoesNotExist:
                         messages.error(request, f"Flower with ID {flower_id} not found.")
                         return redirect('flowers:flower_list')
@@ -109,6 +109,7 @@ def create_order(request):
         return redirect('flowers:flower-list')
 
 
+
 @login_required
 def order_update(request, order_id):
     try:
@@ -122,9 +123,10 @@ def order_update(request, order_id):
                     if new_quantity < 0:
                         messages.error(request, "Invalid Quantity")
                         return HttpResponseRedirect(request.path)
+                    decrease_stock(request, item.flower_id, new_quantity - item.quantity)
                     item.quantity = new_quantity
                     item.save()
-                except ValueError as e:
+                except ValueError:
                     messages.error(request, "Invalid quantity")
                     return HttpResponseRedirect(request.path)
             messages.success(request, "Order updated successfully!")
@@ -137,7 +139,6 @@ def order_update(request, order_id):
         messages.error(request, f"An error occurred: {e}")
         return redirect('flowers:flower_list')
 
-@login_required
 @login_required
 def delete_order(request, order_id):
     order = get_object_or_404(Order, pk=order_id, user=request.user)
@@ -162,9 +163,9 @@ def add_to_cart(request, flower_id):
             if flower.stock < quantity:
                 return JsonResponse({'success': False, 'message': 'Insufficient stock.'})
 
-            cart = request.session.get('cart', {}) #Get cart from session
-            cart[flower_id] = cart.get(flower_id, 0) + quantity #Add or update quantity
-            request.session['cart'] = cart #Save cart back to session
+            current_cart = request.session.get('cart', {}) #Get cart from session
+            current_cart[flower_id] = current_cart.get(flower_id, 0) + quantity #Add or update quantity
+            request.session['cart'] = current_cart #Save cart back to session
             request.session.modified = True #Important to signal session change
             return JsonResponse({'success': True, 'message': 'Item added to cart'})
 
@@ -180,22 +181,21 @@ def add_to_cart(request, flower_id):
 
 @login_required
 def remove_from_cart(request, flower_id):
-    flower = get_object_or_404(Flower, pk=flower_id)
-    cart = request.session.get('cart', {})
-    if flower_id in cart:
-      del cart[flower_id]
-      request.session['cart'] = cart
+    current_cart = request.session.get('cart', {})
+    if flower_id in current_cart:
+      del current_cart[flower_id]
+      request.session['cart'] = current_cart
     return redirect('orders:cart')
 
 @login_required
 def cart(request):
-    cart = request.session.get('cart', {})
+    current_cart = request.session.get('cart', {})
     flowers_queryset = Flower.objects.all()  # Your existing queryset
     flowers = {flower.id: flower for flower in flowers_queryset}
     total_price = 0
     subtotals = {} # Dictionary to store subtotals
 
-    for flower_id, quantity in cart.items():
+    for flower_id, quantity in current_cart.items():
         try:
             flower = flowers_queryset.get(pk=flower_id)
             subtotal = flower.price * quantity  # Calculate subtotal here
@@ -205,19 +205,5 @@ def cart(request):
             # Handle the case where a flower is no longer available
             pass
 
-    context = {'cart': cart, 'flowers': flowers, 'total_price': total_price, 'subtotals': subtotals}
+    context = {'cart': current_cart, 'flowers': flowers, 'total_price': total_price, 'subtotals': subtotals}
     return render(request, 'orders/cart.html', context)
-
-@login_required
-def checkout(request):
-    cart = request.session.get('cart', {})
-    flowers = Flower.objects.all()
-    total_price = 0
-    for flower_id, quantity in cart.items():
-        try:
-            flower = flowers.get(pk=flower_id)
-            total_price += flower.price * quantity
-        except Flower.DoesNotExist:
-            # Handle unavailable flowers
-            pass
-    return render(request, 'orders/checkout.html', {'cart': cart, 'flowers': flowers, 'total_price': total_price})

@@ -9,7 +9,7 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name')  # Adjust fields as needed
+        fields = ('username', 'email', 'first_name', 'last_name', 'phone', 'address', 'additional_info', 'balance')  # Adjust fields as needed
 
     def clean(self):
         cleaned_data = super().clean()
@@ -23,7 +23,7 @@ class UserForm(forms.ModelForm):
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'is_staff')
+        fields = ('first_name', 'last_name', 'email', 'phone', 'address', 'additional_info', 'balance', 'is_staff')
 
 
 class LoginForm(AuthenticationForm):  # Using Django's built-in form for login

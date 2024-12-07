@@ -47,18 +47,6 @@ def get_profile(request):
     return render(request, 'account/profile.html', {'user': request.user})
 
 @login_required(login_url='account:login')
-def update_profile(request):
-    if request.method == 'POST':
-        form = UserUpdateForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('account:profile')
-    else:
-        form = UserUpdateForm(instance=request.user)
-    return render(request, 'account/profile_update.html', {'form': form})
-
-
-@login_required(login_url='account:login')
 def get_order_history(request):
     return get_orders(request)
 
@@ -71,9 +59,9 @@ def get_users(request):
     return render(request, 'account/account_list.html', {'users': users})
 
 def update_user(request, user_id):
-    if not (request.user.is_superuser or request.user.is_staff):
-        return redirect('account:profile')
     user_to_change = get_object_or_404(User, pk=user_id)
+    if user_to_change.id != request.user.id and not(request.user.is_superuser or request.user.is_staff):
+        return redirect('account:profile')
     user = request.user
     if request.method == 'POST':
         form = UserUpdateForm(request.POST, instance=user_to_change)

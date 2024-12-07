@@ -12,7 +12,4 @@ urlpatterns = [
     path('cart/', login_required(views.cart), name='cart'), #Cart View
     path('add-to-cart/<int:flower_id>/', login_required(views.add_to_cart), name='add_to_cart'), #Add to cart
     path('remove-from-cart/<int:flower_id>/', login_required(views.remove_from_cart), name='remove_from_cart'), #Remove from cart
-    path('checkout/', login_required(views.checkout), name='checkout'), #Checkout View
-
-
 ]

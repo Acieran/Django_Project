@@ -39,17 +39,7 @@ class FlowerDeleteView(MyLoginRequiredMixin,DeleteView):
     template_name = 'flowers/flower_delete.html'
     success_url = reverse_lazy('flowers:flower-list')
 
-def add_to_cart(request,flower_id):
-    if request.method == 'POST':
-        flower = get_object_or_404(Flower,flower_id=flower_id)
-        quantity = request.POST.get('quantity')
-        cart_item, created = FlowerCart.objects.get_or_create(user=request.user,flower=flower)
-        if created:
-            cart_item.quantity = quantity
-            cart_item.save()
-        else:
-            cart_item.quantity +=int(quantity)
-            cart_item.save()
-        return redirect('flower-list')
-    else:
-        return redirect('flower-list')
+def decrease_stock(request, flower_id, quantity):
+    flower = get_object_or_404(Flower, id=flower_id)
+    flower.stock = flower.stock - quantity
+    flower.save()

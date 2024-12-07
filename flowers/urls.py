@@ -9,5 +9,4 @@ urlpatterns = [
     path('create/', views.FlowerCreateView.as_view(), name='flower-create'),
     path('<int:pk>/update/', views.FlowerUpdateView.as_view(), name='flower-update'),
     path('<int:pk>/delete/', views.FlowerDeleteView.as_view(), name='flower-delete'),
-    path('<int:pk>/add-to-cart/',views.add_to_cart,name='add-to-cart'),
 ]

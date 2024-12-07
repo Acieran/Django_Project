@@ -5,32 +5,57 @@ actor Admin
 
 rectangle OnlineFlowersShop {
   usecase Check_All_Flowers
-  usecase Select_Flower
+  usecase Get_Flower_Detail
   usecase Add_To_Cart
   usecase Check_Cart
+  usecase Log_in
   usecase Register
   usecase Place_Order
-  usecase Check_Order_Status
-  usecase Flower_Administration
-  usecase Order_Administration
-  usecase User_Administration
+  usecase Update_Order
+  usecase Delete_Order
+  usecase Log_Out
+  usecase Check_Profile
+  usecase Update_Profile
+  usecase Get_Orders
+  usecase Get_Users
+  usecase Delete_User
+  usecase Create_Flower
+  usecase Update_Flower
+  usecase Delete_Flower
 }
 
 User --|> Check_All_Flowers
-User --|> Select_Flower
-User --|> Add_To_Cart
-User --|> Check_Cart
+User --|> Get_Flower_Detail
 User --|> Register
+User --|> Log_in
 
 Registered_User --|> Check_All_Flowers
-Registered_User --|> Select_Flower
+Registered_User --|> Get_Flower_Detail
 Registered_User --|> Add_To_Cart
 Registered_User --|> Check_Cart
 Registered_User --|> Place_Order
-Registered_User --|> Check_Order_Status
+Registered_User --|> Update_Order
+Registered_User --|> Delete_Order
+Registered_User --|> Log_Out
+Registered_User --|> Check_Profile
+Registered_User --|> Update_Profile
+Registered_User --|> Get_Orders
 
-Admin --|> Flower_Administration
-Admin --|> Order_Administration
-Admin --|> User_Administration
+Admin --|> Check_All_Flowers
+Admin --|> Get_Flower_Detail
+Admin --|> Add_To_Cart
+Admin --|> Check_Cart
+Admin --|> Place_Order
+Admin --|> Update_Order
+Admin --|> Delete_Order
+Admin --|> Log_Out
+Admin --|> Check_Profile
+Admin --|> Update_Profile
+Admin --|> Get_Orders
+Admin --|> Get_Users
+Admin --|> Delete_User
+Admin --|> Create_Flower
+Admin --|> Update_Flower
+Admin --|> Delete_Flower
 
 @enduml

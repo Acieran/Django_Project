@@ -1,66 +1,77 @@
 @startuml
 class Flower {
-    - id : Id
     - name : String
+    - description : TextField
     - price : Double
-    - description : String
     - image : Image
+    - stock : Integer
     
-    + get_flowers() : List<Flower>
-    + get_flower(id: int) : Flower
-    + add_flower(name : String, price : Double, description : String, image : Image) : void
-    + delete_flower(id: int) : void
-    + edit_flower(id: int, name : String, price : Double, description : String, image : Image) : void
-    + add_flower_to_Cart(id: int,Order int): void
+    + FlowerListView()
+    + FlowerDetailView(id: flower_id)
+    + FlowerCreateView(all fields)
+    + FlowerUpdateView(id: int, all fields)
+    + FlowerDeleteView(id: int)
+    + decrease_stock(id : flower_id, int: quantity)
 }
 
 class User {
-    - Id : Id
-    - name : String
+    - first_name : String
+    - last_name : String
     - phone : String
     - address : String
     - AdditionalInfo: String
     - Balance : Double
-    
-    + create_user(name: String, phone: String, address: String) : User
-    + find_user(id: int): User
-    + get_user(id: int) : User
-    + get_Order_history(User: user) : List<Order>
-    + update_user(User: user) : void
-    + delete_user(User: user) : void
-    + get_users() : List<User>
+    - Is_Staff : Boolean
+
+    + register_user{UserForm(fields all)}
+    + login_user{AuthenticationForm(username,password)}
+    + logout_user()
+    + get_profile()
+    + get_order_history() -> Order.get_orders()
+    + get_users()
+    + update_user(id : user_id){UserUpdateForm(fields all + is_staff - username - password)}
+    + delete_user(id : user_id)
 }
 
 class Order {
-    - Id : Id
     - user : User
-    - items : Map<Flower, Double>
-    - total_price : Double
-    - order_status : OrderStatus
-    - payment_status : PaymentStatus
-    
-    + place_order(Order: order, User: user) : void
-    + create_order(user: User, items: List<OrderItem>) : Order
+    - order_date : Date
+    - total_amount : Integer
+
     + get_orders(user: User) : List<Order>
-    + get_order(Order: order) : Order
-    + update_order(order: Order) : void
-    + delete_order(Id : Id): void
+    + get_order(Order: order_id) : Order, List<OrderItems>
+    + create_order(FlowerCart: cart, User: user) : Order
+    + order_update(Order: order_id)
+    + delete_order(Order : order_id): void
+
+    + place_order(Order: order, User: user) : void
 }
 
+class OrderItem {
+    - order : Order
+    - flower : Flower
+    - quantity : int
 
-enum OrderStatus {
-    PENDING,
-    CONFIRMED,
-    DELIVERED
+    + get_order_items(Order: order_id, User: user) : List<OrderItems>
+    + order_update(Order: order_id)
+    + delete_order(Order: order_id): void
 }
 
-enum PaymentStatus{
-    PAID,
-    NOTFULLYPAYED,
-    NOTPAYED
+class FlowerCart {
+    - user : User
+    - flower : Flower
+    - quantity : int
+
+    + add_to_cart(Flower: flower_id)
+    + remove_from_cart(Flower: flower_id)
+    + cart()
 }
 
-Order *-- User
+Order *--* User
 Order *-- Flower
+OrderItem *--* Order
+FlowerCart *-- Flower
+FlowerCart *-- User
+OrderItem *-- Flower
 
 @enduml
