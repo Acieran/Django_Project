@@ -2,10 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from orders.views import get_orders
 from .models import User
-from .forms import UserForm, UserUpdateForm, AuthenticationForm, LoginForm  # Create these forms
+from .forms import UserForm, UserUpdateForm, AuthenticationForm  # Create these forms
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from orders.models import Order #Import Order model
 from django.urls import reverse
 
 def register_user(request):

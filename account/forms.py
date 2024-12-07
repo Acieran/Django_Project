@@ -24,12 +24,3 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email', 'phone', 'address', 'additional_info', 'balance', 'is_staff')
-
-
-class LoginForm(AuthenticationForm):  # Using Django's built-in form for login
-    # Customize if needed (e.g., add remember me checkbox)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs['class'] = 'form-control'
-        self.fields['password'].widget.attrs['class'] = 'form-control'

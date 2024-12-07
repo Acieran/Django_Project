@@ -1,9 +1,10 @@
-myflowershop/
-├── myflowershop/
+DjangoProject/
+├── DjangoProject/
 │   ├── __init__.py
 │   ├── settings.py
 │   ├── urls.py
 │   ├── wsgi.py
+│   ├── wiews.py
 │   └── asgi.py
 ├── flowers/
 │   ├── __init__.py
@@ -21,6 +22,12 @@ myflowershop/
 │   ├── __init__.py
 │   ├── models.py
 │   ├── views.py (get_orders,get_order,CDU order,place_order)
+│   ├── admin.py
+│   ├── apps.py
+│   ├── tests.py
+│   ├── templatetags
+│   │       ├──  __init__.py
+│   │       └── my_filters.py
 │   ├── templates/
 │   │   └── orders/
 │   │       ├── cart.html
@@ -30,22 +37,28 @@ myflowershop/
 │   │       ├── order_detail.html
 │   │       └── checkout.html
 │   └── urls.py
+├── static/
+│   ├── css
+│   │       ├── flowers_styles.css
+│   │       └── style.css
+│   ├── images
+│   │       └── shopping-cart.png
 ├── account/
 │   ├── __init__.py
 │   ├── models.py
 │   ├── views.py(register_User,find_User,get_profile,get_order_history,get_Users,CDU User)
+│   ├── tests.py
+│   ├── forms.py
+│   ├── apps.py
+│   ├── admin.py
 │   ├── templates/
 │   │   └── account/
 │   │       ├── register.html
 │   │       ├── login.html
 │   │       ├── profile.html
-│   │       ├── order_history.html
+│   │       ├── profile_update.html
 │   │       ├── account_list.html
 │   │       ├── account_update.html
 │   │       └── account_delete.html
 │   └── urls.py
 └── manage.py
-; ├── about/  # Django app for "About Us" page (optional)
-; │   ├── ... (similar structure as shop and account apps)
-; ├── contact/ # Django app for "Contact Us" page (optional)
-; │   ├── ... (similar structure as shop and account apps)

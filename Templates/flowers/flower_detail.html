@@ -29,9 +29,16 @@
     {#                    {{ form.as_p }}  <!-- Or use a more customized form rendering -->#}
     {#                    <button type="submit" class="add-to-cart">Add to Cart</button>#}
     {#                </form>#}
-                    <button class="btn btn-success add-to-cart-btn" data-flower-id="{{ flower.id }}">
+                    {% if not user.is_authenticated %}
+                        <form method="get" action="{% url 'account:login' %}">  <!-- Redirect to login upon submission -->
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        </form>
+                    {% else %}
+                        <button class="btn btn-success add-to-cart-btn" data-flower-id="{{ flower.id }}">
                         <i class="fas fa-shopping-cart"></i> Добавить в корзину
-                    </button>
+                        </button>
+                    {% endif %}
                 {% else %}
                     <p class="out-of-stock">К сожалению, сейчас данного товара нет в наличии.</p>
                 {% endif %}
@@ -46,19 +53,64 @@
         // JavaScript for Add to Cart (replace with your actual cart logic)
         const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
         addToCartButtons.forEach(button => {
-            button.addEventListener('click', () => {
+            button.addEventListener('click', async () => {
                 const flowerId = button.dataset.flowerId;
                 const quantityInput = document.querySelector(`input[data-flower-id="${flowerId}"]`);
                 const quantity = parseInt(quantityInput.value);
-                if (quantity > 0) {
-                    //Your add to cart logic here, passing flowerId and quantity
-                    alert(`Adding ${quantity} of flower ID ${flowerId} to cart`);
-                    quantityInput.value = 0; //Reset Quantity input
-                } else {
-                    alert("Please select quantity greater than zero");
+
+                if (isNaN(quantity) || quantity <= 0) {
+                    alert("Please enter a valid quantity (greater than 0).");
+                    return; // Stop further execution if quantity is invalid
+                }
+
+                try {
+                    const response = await fetch('/orders/add-to-cart/' + flowerId + '/', { // Adjust URL if needed
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken') //Important for CSRF protection
+                        },
+                        body: JSON.stringify({quantity: quantity})
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        const errorMessage = errorData.error || 'An error occurred while adding to cart.';
+                        throw new Error(errorMessage); // Re-throw the error for handling below
+                    }
+
+                    const data = await response.json();
+                    if (data.success) {
+                        alert("Item added to cart successfully!");
+                        quantityInput.value = 0; //Reset quantity input
+                    } else {
+                        alert(data.message);
+                    }
+
+
+                } catch (error) {
+                    console.error("Error adding to cart:", error);
+                    alert('Error adding to cart: ' + error.message);
                 }
             });
         });
+        
+        // Helper function to get CSRF token from cookie (for CSRF protection)
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
 
 

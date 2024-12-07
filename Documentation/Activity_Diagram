@@ -1,6 +1,8 @@
 @startuml
 participant Frontend
 participant Order
+participant OrderItem
+participant FlowerCart
 participant User
 participant Flower
 participant Database
@@ -14,6 +16,73 @@ Database --> Flower: Flower(s) data
 deactivate Database
 Flower --> Frontend: Flower(s) data
 deactivate Flower
+
+Frontend -> Flower: Add Flower/Update Flower/Delete Flower/Decrease Stock
+activate Flower
+Flower -> Database: Add Flower/Update Flower/Delete Flower/Decrease Stock
+deactivate Flower
+
+Frontend -> User: (Add/Update/Delete/LogOut/LogIn) User
+activate User
+User -> Database: (Add/Update/Delete/LogOut/LogIn) User
+activate Database
+Database -> User: User (Added/Updated/Deleted/LoggedOut/LoggedIn)
+deactivate Database
+User -> Frontend: Show next view
+deactivate User
+
+Frontend -> User: Get Profile/Get Users
+activate User
+User -> Database: Get Profile/Get Users
+activate Database
+Database -> User: Profile Data/Users Data
+deactivate Database
+User -> Frontend: Show Profile View/Show Users View
+deactivate User
+
+Frontend -> User: Get Order History
+activate User
+User -> Order: Get Orders of User
+activate Order
+Order -> Database: Get Orders of User
+activate Database
+Database -> Order: User Orders Data
+deactivate Database
+Order -> User: User Orders Data
+deactivate Order
+User -> Frontend: Show User Orders
+deactivate User
+
+Frontend -> Order: Get Orders
+activate Order
+Order -> Database: Get Orders
+activate Database
+Database -> Order: Orders Data
+deactivate Database
+Order -> Frontend: Show Orders View
+deactivate Order
+
+Frontend -> Order: Get Order
+activate Order
+Order -> Database: Get Order
+activate Database
+Database -> Order: Order Data
+deactivate Database
+Order -> OrderItem: Get OrderItem Data(logic above)
+activate OrderItem
+OrderItem -> User: Check Current User
+activate User
+User -> Frontend: User cant see this Order Forbidden(Return none)
+User -> OrderItem: User can see this Order
+deactivate User
+OrderItem -> Database: Get OrderItems
+activate Database
+Database -> OrderItem: Return OrderItems
+deactivate Database
+OrderItem -> Order: Return OrderItems
+deactivate OrderItem
+Order -> Frontend: Show Order Details
+deactivate Order
 
 Frontend -> Order: Add item to cart(Flower, quantity)
 activate Order
@@ -33,7 +102,7 @@ deactivate Database
 Order --> Frontend: Cart data
 deactivate Order
 
-Frontend -> Order: Place order(User not existst)
+Frontend -> Order: Place order(User not exists)
 activate Order
 Order -> User: Check if user registered
 deactivate Order
@@ -73,29 +142,6 @@ deactivate Database
 Order --> Frontend: order data
 deactivate Order
 
-Frontend -> User: Update Balance
-activate User
-User -> Database: Update Balance
-activate Database
-Database --> User: Balance Updated
-deactivate Database
-User --> Frontend: Balance Updated
-deactivate User
-
-Frontend -> Flower: Add Flower
-activate Flower
-Flower -> Database: Send Flower to BD
-deactivate Flower
-
-Frontend -> Flower: Delete Flower
-activate Flower
-Flower -> Database: Delete Flower from BD
-deactivate Flower
-
-Frontend -> Flower: Edit Flower
-activate Flower
-Flower -> Database: Edit Flower in BD
-deactivate Flower
 
 Frontend -> Order: Delete Order
 activate Order
