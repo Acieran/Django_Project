@@ -12,7 +12,7 @@ from .models import Order, OrderItem
 from flowers.models import Flower # Import the Flower model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages #For messages
-
+# TODO update shipping information of order from user
 @login_required
 def get_orders(request):
     orders = Order.objects.filter(user=request.user)
@@ -68,7 +68,7 @@ def create_order(request):
                 cart_items = request.session.get('cart', {})
                 if not cart_items:
                     messages.error(request, 'Your cart is empty.')
-                    return redirect('flowers:flower_list')
+                    return redirect('orders:cart')
 
                 total_price = 0
                 order = Order.objects.create(user=request.user, total_amount=total_price)
@@ -77,17 +77,17 @@ def create_order(request):
                         flower = Flower.objects.get(pk=flower_id)
                         if flower.stock < quantity:
                             messages.error(request, f"Insufficient stock for {flower.name}.")
-                            return redirect('flowers:flower_list')  # Or handle differently.
+                            return redirect('orders:cart')  # Or handle differently.
                         total_price += flower.price * quantity
                         order_item = OrderItem.objects.create(order_id=order.id, quantity=quantity, flower=flower)
                         order_item.save()
                         decrease_stock(request, flower_id, quantity)
                     except Flower.DoesNotExist:
                         messages.error(request, f"Flower with ID {flower_id} not found.")
-                        return redirect('flowers:flower_list')
+                        return redirect('orders:cart')
                     except ValueError as e:
                         messages.error(request, f"Invalid quantity: {e}")
-                        return redirect('flowers:flower_list')
+                        return redirect('orders:cart')
 
                 try:
                     order.total_amount = total_price
@@ -97,16 +97,16 @@ def create_order(request):
                     print(f"Exception during item.save(): {e}")
                     traceback.print_exc()  # Print the full traceback
                     messages.error(request, f"A database error occurred during order placement: {e}")
-                    return redirect('flowers:flower_list')  # redirect back to cart
+                    return redirect('orders:cart')  # redirect back to cart
 
                 del request.session['cart']  # Important: Clear the session cart
                 messages.success(request, 'Your order has been placed!')
                 return redirect('orders:order_detail', order_id=order.id)
         except Exception as e:
             messages.error(request, f"An error occurred: {e}")
-            return redirect('flowers:flower-list')
+            return redirect('orders:cart')
     else:
-        return redirect('flowers:flower-list')
+        return redirect('orders:cart')
 
 
 
@@ -143,6 +143,10 @@ def order_update(request, order_id):
 def delete_order(request, order_id):
     order = get_object_or_404(Order, pk=order_id, user=request.user)
     if request.method == 'POST':
+        order_items = get_order_items(request, order_id)
+        for item in order_items:
+            decrease_stock(request, item.flower_id, -item.quantity)
+            item.delete()
         order.delete()
         messages.success(request, 'Order deleted.')
         return redirect('orders:order_list')
