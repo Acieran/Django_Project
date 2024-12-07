@@ -57,6 +57,9 @@ def get_order_items(request, order_id):
 
 def get_order(request, order_id):
     order = get_object_or_404(Order, pk=order_id, user=request.user)
+    if order.user.id != request.user.id and not (
+            request.user.is_staff or request.user.is_superuser):  # Example: Assuming you have a request.user
+        raise PermissionDenied("You do not have permission to view this order.")
     order_items = get_order_items(request, order_id)
     return render(request, 'orders/order_detail.html', {'order': order, 'order_items': order_items})
 
